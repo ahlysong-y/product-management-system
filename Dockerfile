@@ -1,33 +1,47 @@
 FROM php:8.2-apache
 
-# ដំឡើង extensions ចាំបាច់សម្រាប់ PostgreSQL និង Laravel
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     zip \
     unzip \
     git \
+    curl \
     && docker-php-ext-install pdo pdo_pgsql zip
 
-# បើក Apache rewrite module
+# Enable Apache rewrite
 RUN a2enmod rewrite
 
-# កំណត់ Document Root ទៅកាន់ public folder របស់ Laravel
+# Set Apache Document Root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# ដំឡើង Composer
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+    /etc/apache2/sites-available/*.conf
+
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+    /etc/apache2/apache2.conf
+
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# ចម្លងកូដគម្រោងចូលទៅក្នុង Server
+# Set Working Directory
 WORKDIR /var/www/html
+
+# Copy Project
 COPY . .
 
-# ដំឡើង dependencies របស់ Laravel
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# កំណត់សិទ្ធិ (Permission) ទៅលើ folder របស់ Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Laravel permissions
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+RUN chmod -R 775 storage bootstrap/cache
+
+# Generate storage link
+RUN php artisan storage:link || true
 
 EXPOSE 80
+
+CMD apache2-foreground

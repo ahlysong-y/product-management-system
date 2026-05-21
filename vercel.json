@@ -1,0 +1,8 @@
+{
+    "buildCommand": "npm run build",
+    "outputDirectory": "public",
+    "framework": "laravel",
+    "php": {
+        "version": "8.3"
+    }
+}
