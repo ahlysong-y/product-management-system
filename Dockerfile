@@ -44,7 +44,7 @@ RUN php artisan storage:link || true
 
 EXPOSE 80
 
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=80
+CMD php artisan migrate --force && php -S 0.0.0.0:80 -t public
 # ១. ដំឡើង Node.js និង NPM នៅក្នុង Container (ប្រសិនបើមិនទាន់មាន)
 USER root
 RUN apt-get update && apt-get install -y nodejs npm
