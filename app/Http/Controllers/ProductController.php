@@ -66,10 +66,12 @@ class ProductController extends Controller
             'qty' => $request->qty
         ]);
 
-        ActivityLog::create([
-            'user_id' => auth()->id(),
-            'activity' => 'Added product: ' . $request->name
-        ]);
+        if (auth()->check()) {
+            ActivityLog::create([
+                'user_id' => auth()->user()->id,
+                'activity' => 'Added product: ' . $request->name
+            ]);
+        }
 
         return redirect('/products')
             ->with('success', 'Product Added Successfully');
@@ -122,19 +124,23 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        ActivityLog::create([
-            'user_id' => auth()->id(),
-            'activity' => 'Updated product: ' . $product->name
-        ]);
+        if (auth()->check()) {
+            ActivityLog::create([
+                'user_id' => auth()->user()->id,
+                'activity' => 'Updated product: ' . $product->name
+            ]);
+        }
 
         return redirect('/products')
             ->with('success', 'Product Updated Successfully');
     }
 
-    public function destroy(Product $product)
-    {
-        ActivityLog::create([
-            'user_id' => auth()->id(),
+    publif (auth()->check()) {
+            ActivityLog::create([
+                'user_id' => auth()->user()->id,
+                'activity' => 'Deleted product: ' . $product->name
+            ]);
+        } 'user_id' => auth()->id(),
             'activity' => 'Deleted product: ' . $product->name
         ]);
 
