@@ -25,9 +25,7 @@ WORKDIR /var/www/html
 # ៦. Copy កូដគម្រោងទាំងអស់ (រួមទាំង Folder vendor ដែលមានស្រាប់ពីម៉ាស៊ីនរបស់អ្នក)
 COPY . .
 
-# ៧. ធ្វើការ Build ឯកសារ Frontend (CSS/JS)
-RUN npm install \
-    && npm run build
+
 
 # ៨. កំណត់សិទ្ធិ (Permissions) ទៅលើ Folder storage, cache និង vendor
 RUN chown -R www-data:www-data storage bootstrap/cache vendor \
