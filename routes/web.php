@@ -114,32 +114,30 @@ Route::middleware(['auth', 'admin'])->group(function () {
 */
 
 Route::get('/run-migration', function () {
-
     try {
-
         Artisan::call('migrate', ['--force' => true]);
-
         return "Database migration success!";
     } catch (\Exception $e) {
-
         return "Error: " . $e->getMessage();
     }
 });
 
 Route::get('/create-admin', function () {
+    // ស្វែងរកមើលថាតើមានគណនី admin@gmail.com នេះហើយឬនៅ
+    $user = User::where('email', 'admin@gmail.com')->first();
 
-    $userExists = User::where('email', 'admin@gmail.com')->exists();
-
-    if (!$userExists) {
-
+    if (!$user) {
+        // បើមិនទាន់មានទេ គឺបង្កើតគណនីថ្មី រួចដាក់ role ទៅជា admin ភ្លាមៗ
         User::create([
             'name' => 'Admin User',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
+            'role' => 'admin',
         ]);
-
-        return "Admin account created successfully!";
+        return "បង្កើតគណនី និងផ្តល់សិទ្ធិជា Admin ជោគជ័យហើយ! សូមទៅសាកល្បង Login ឡើងវិញ។";
     }
 
-    return "Admin account already exists!";
+    // បើមានគណនីនេះរួចហើយ វានឹងធ្វើការ Update role ឱ្យទៅជា admin ភ្លាម
+    $user->update(['role' => 'admin']);
+    return "គណនីមានរួចហើយ! ប៉ុន្តែបានធ្វើបច្ចុប្បន្នភាពកែប្រែសិទ្ធិ Role ទៅជា Admin ជោគជ័យហើយ!";
 });
