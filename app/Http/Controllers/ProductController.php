@@ -135,14 +135,14 @@ class ProductController extends Controller
             ->with('success', 'Product Updated Successfully');
     }
 
-    publif (auth()->check()) {
+    public function destroy(Product $product)
+    {
+        if (auth()->check()) {
             ActivityLog::create([
                 'user_id' => auth()->user()->id,
                 'activity' => 'Deleted product: ' . $product->name
             ]);
-        } 'user_id' => auth()->id(),
-            'activity' => 'Deleted product: ' . $product->name
-        ]);
+        }
 
         $product->delete();
 
