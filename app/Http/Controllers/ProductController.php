@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Services\ImageGeneratorService;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\ActivityLog;
 use App\Models\StockHistory;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -37,11 +37,11 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string|max:1000',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-
         ]);
 
         $imagePath = null;
 
+        // Upload Image
         if ($request->hasFile('image')) {
 
             $imagePath = $request->file('image')
@@ -60,15 +60,18 @@ class ProductController extends Controller
 
         ]);
 
+        // Stock History
         StockHistory::create([
             'product_id' => $product->id,
             'type' => 'Stock In',
             'qty' => $request->qty
         ]);
 
-        if (auth()->check()) {
+        // Activity Log
+        if (Auth::check()) {
+
             ActivityLog::create([
-                'user_id' => auth()->user()->id,
+                'user_id' => Auth::user()->id,
                 'activity' => 'Added product: ' . $request->name
             ]);
         }
@@ -85,6 +88,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
+
         return view('products.edit', compact('product', 'categories'));
     }
 
@@ -98,35 +102,34 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-
-
         $data = [
+
             'name' => $request->name,
             'qty' => $request->qty,
             'price' => $request->price,
             'description' => $request->description,
+            'category_id' => $request->category_id,
         ];
 
-
-        // Handle image upload or auto-generate
+        // Upload New Image
         if ($request->hasFile('image')) {
+
             $image = $request->file('image');
+
             $imageName = time() . '.' . $image->getClientOriginalExtension();
+
             $image->storeAs('products', $imageName, 'public');
+
             $data['image'] = 'products/' . $imageName;
-        } elseif ($request->name !== $product->name && !$product->image) {
-            // If product name changed and no existing image, auto-fetch
-            $autoImage = ImageGeneratorService::fetchProductImage($request->name);
-            if ($autoImage) {
-                $data['image'] = $autoImage;
-            }
         }
 
         $product->update($data);
 
-        if (auth()->check()) {
+        // Activity Log
+        if (Auth::check()) {
+
             ActivityLog::create([
-                'user_id' => auth()->user()->id,
+                'user_id' => Auth::user()->id,
                 'activity' => 'Updated product: ' . $product->name
             ]);
         }
@@ -137,9 +140,11 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        if (auth()->check()) {
+        // Activity Log
+        if (Auth::check()) {
+
             ActivityLog::create([
-                'user_id' => auth()->user()->id,
+                'user_id' => Auth::user()->id,
                 'activity' => 'Deleted product: ' . $product->name
             ]);
         }
