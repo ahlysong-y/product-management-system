@@ -1,23 +1,39 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
+
+use App\Models\User;
+
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\StockHistoryController;
-use Illuminate\Support\Facades\Artisan;
+
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return redirect('/dashboard');
 });
 
-// Authentication Routes
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('guest')->group(function () {
 
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])
@@ -28,14 +44,25 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('/register', [RegisteredUserController::class, 'store']);
+    Route::post('/register', [RegisteredUserController::class, 'store');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Logout
+|--------------------------------------------------------------------------
+*/
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-// Public Routes
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -48,7 +75,12 @@ Route::middleware('auth')->group(function () {
         ->name('stocks.index');
 });
 
-// Report Routes
+/*
+|--------------------------------------------------------------------------
+| Report Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/products/pdf', [ReportController::class, 'pdf'])
     ->name('products.pdf');
 
@@ -58,7 +90,12 @@ Route::get('/products/print', [ReportController::class, 'print'])
 Route::get('/products/excel', [ReportController::class, 'excel'])
     ->name('products.excel');
 
-// Admin Routes
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::resource('products', ProductController::class);
@@ -70,11 +107,40 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('suppliers', SupplierController::class);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Development Routes (Remove in Production)
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/run-migration', function () {
+
     try {
+
         Artisan::call('migrate', ['--force' => true]);
-        return "Database migration បានជោគជ័យហើយ!";
+
+        return "Database migration success!";
+
     } catch (\Exception $e) {
-        return "មានបញ្ហា៖ " . $e->getMessage();
+
+        return "Error: " . $e->getMessage();
     }
+});
+
+Route::get('/create-admin', function () {
+
+    $userExists = User::where('email', 'admin@gmail.com')->exists();
+
+    if (!$userExists) {
+
+        User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        return "Admin account created successfully!";
+    }
+
+    return "Admin account already exists!";
 });
