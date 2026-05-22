@@ -73,6 +73,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/stocks', [StockHistoryController::class, 'index'])
         ->name('stocks.index');
+
+    // Allow all authenticated users to view products
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 });
 
 /*
@@ -98,7 +102,12 @@ Route::get('/products/excel', [ReportController::class, 'excel'])
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    Route::resource('products', ProductController::class);
+    // Admin-only: create, edit, delete for products
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
     Route::resource('categories', CategoryController::class);
 
