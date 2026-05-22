@@ -15,7 +15,12 @@ class CategoryController extends Controller
 
     public function create()
     {
-        return view('categories.create');
+        // ១. ទាញយកទិន្នន័យ categories ទាំងអស់ពី Database
+        $categories = Category::all();
+
+        // ២. បោះអថេរ $categories ទៅកាន់ View products/create.blade.php
+        return view('products.create', compact('categories'));
+        // return view('categories.create');
     }
 
     public function store(Request $request)
