@@ -11,6 +11,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\StockHistoryController;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -28,7 +29,6 @@ Route::middleware('guest')->group(function () {
         ->name('register');
 
     Route::post('/register', [RegisteredUserController::class, 'store']);
-
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
@@ -46,7 +46,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/stocks', [StockHistoryController::class, 'index'])
         ->name('stocks.index');
-
 });
 
 // Report Routes
@@ -69,5 +68,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('sales', SaleController::class);
 
     Route::resource('suppliers', SupplierController::class);
+});
 
+Route::get('/run-migration', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return "Database migration បានជោគជ័យហើយ!";
+    } catch (\Exception $e) {
+        return "មានបញ្ហា៖ " . $e->getMessage();
+    }
 });
