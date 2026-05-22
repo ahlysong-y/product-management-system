@@ -1,13 +1,9 @@
 FROM php:8.3-apache
 
-# ១. ដំឡើង Dependencies របស់ Linux និង PHP Extensions (PostgreSQL, Zip)
+# ១. ដំឡើងតែ Extensions ដែល Laravel ត្រូវការចាំបាច់បំផុត (ដកកញ្ចប់ Linux មិនចាំបាច់ចេញដើម្បីសន្សំ RAM)
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
-    zip \
-    unzip \
-    git \
-    curl \
     && docker-php-ext-install pdo pdo_pgsql zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -26,14 +22,14 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 # ៥. កំណត់ Working Directory
 WORKDIR /var/www/html
 
-# ៦. Copy កូដគម្រោងទាំងអស់ (រួមទាំង Folder vendor និង node_modules បើមាន) ចូលទៅក្នុង Container តែម្តង
+# ៦. Copy កូដគម្រោងទាំងអស់ (រួមទាំង Folder vendor ដែលមានស្រាប់ពីម៉ាស៊ីនរបស់អ្នក)
 COPY . .
 
 # ៧. ធ្វើការ Build ឯកសារ Frontend (CSS/JS)
 RUN npm install \
     && npm run build
 
-# ៨. កំណត់សិទ្ធិ (Permissions) ទៅលើ Folder storage និង cache
+# ៨. កំណត់សិទ្ធិ (Permissions) ទៅលើ Folder storage, cache និង vendor
 RUN chown -R www-data:www-data storage bootstrap/cache vendor \
     && chmod -R 775 storage bootstrap/cache vendor
 
