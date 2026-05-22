@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# ១. ដំឡើង Dependencies របស់ Linux
+# ១. ដំឡើង Dependencies របស់ Linux និង PHP Extensions (PostgreSQL, Zip)
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
@@ -23,30 +23,24 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# ៥. ទាញយក Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# ៦. កំណត់ Working Directory
+# ៥. កំណត់ Working Directory
 WORKDIR /var/www/html
 
-# ៧. Copy កូដគម្រោងទាំងអស់ចូលទៅក្នុង Container មុនគេ
+# ៦. Copy កូដគម្រោងទាំងអស់ (រួមទាំង Folder vendor និង node_modules បើមាន) ចូលទៅក្នុង Container តែម្តង
 COPY . .
 
-# ៨. ដំឡើង Laravel dependencies តាមរយៈ Composer (បន្ថែមការការពារកុំឱ្យគាំងទាញយក)
-RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --optimize-autoloader --ignore-platform-reqs --prefer-dist --no-cache
-
-# ៩. ដំឡើង Node packages និងធ្វើការ Build ឯកសារ Frontend (CSS/JS)
+# ៧. ធ្វើការ Build ឯកសារ Frontend (CSS/JS)
 RUN npm install \
     && npm run build
 
-# ១០. កំណត់សិទ្ធិ (Permissions) ទៅលើ Folder storage និង cache
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# ៨. កំណត់សិទ្ធិ (Permissions) ទៅលើ Folder storage និង cache
+RUN chown -R www-data:www-data storage bootstrap/cache vendor \
+    && chmod -R 775 storage bootstrap/cache vendor
 
-# ១១. បង្កើត Storage Link របស់ Laravel
+# ៩. បង្កើត Storage Link របស់ Laravel
 RUN php artisan storage:link || true
 
 EXPOSE 80
 
-# ១២. បញ្ជាឱ្យរត់ Migration និងបើក Apache Web Server
+# ១០. បញ្ជាឱ្យរត់ Migration និងបើក Apache Web Server
 CMD php artisan migrate --force && apache2-foreground
