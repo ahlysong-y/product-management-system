@@ -40,10 +40,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z" />
                         </svg>
-                        ប្រភេទទិន្នន័យ
+                        Categories
                     </a>
                 </li>
-                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">បង្កើតថ្មី</li>
+                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Create New</li>
             </ol>
         </nav>
 
@@ -60,9 +60,9 @@
                     </div>
                     <div>
                         <h4 class="card-title mb-0 text-dark custom-heading" style="font-size: 1.2rem;">
-                            បន្ថែមប្រភេទទិន្នន័យថ្មី</h4>
+                            Add New Category</h4>
                         <small class="text-muted"
-                            style="font-size: 0.85rem; font-weight: 300;">សូមបំពេញព័ត៌មានខាងក្រោមដើម្បីបង្កើតប្រភេទថ្មី</small>
+                            style="font-size: 0.85rem; font-weight: 300;">Please fill in the information below to create a new category</small>
                     </div>
                 </div>
 
@@ -74,7 +74,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0a9 9 0 01-18 0z" />
                     </svg>
-                    ត្រឡប់ក្រោយ
+                    Back
                 </a>
             </div>
 
@@ -84,7 +84,7 @@
 
                     <div class="mb-4">
                         <label for="name" class="form-label text-muted uppercase form-label-custom mb-2">
-                            ឈ្មោះប្រភេទទិន្នន័យ <span class="text-danger">*</span>
+                            Category Name <span class="text-danger">*</span>
                         </label>
 
                         <div class="input-group">
@@ -98,7 +98,7 @@
                             <input type="text" name="name" id="name"
                                 class="form-control border-start-0 bg-light bg-opacity-20 rounded-end-3 py-2.5"
                                 style="font-size: 0.95rem; font-weight: 400;"
-                                placeholder="ឧទាហរណ៍៖ សម្ភារៈការិយាល័យ, គ្រឿងអេឡិចត្រូនិច..." required autocomplete="off"
+                                placeholder="e.g., Office Supplies, Electronics..." required autocomplete="off"
                                 value="{{ old('name') }}">
                         </div>
 
@@ -119,7 +119,7 @@
                         style="font-size: 0.9rem;">
                         <a href="{{ url('/categories') }}"
                             class="btn btn-light border text-secondary fw-bold rounded-3 px-4 py-2">
-                            បោះបង់
+                            Cancel
                         </a>
 
                         <button type="submit"
@@ -128,7 +128,7 @@
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            រក្សាទុកទិន្នន័យ
+                            Save Category
                         </button>
                     </div>
 
