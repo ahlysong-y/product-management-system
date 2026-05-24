@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# ១. ដំឡើងតែ Extensions ដែល Laravel ត្រូវការចាំបាច់បំផុត (ដកកញ្ចប់ Linux មិនចាំបាច់ចេញដើម្បីសន្សំ RAM)
+# ១. ដំឡើងតែ Extensions ដែល Laravel ត្រូវការចាំបាច់បំផុត
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
@@ -22,10 +22,11 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 # ៥. កំណត់ Working Directory
 WORKDIR /var/www/html
 
-# ៦. Copy កូដគម្រោងទាំងអស់ (រួមទាំង Folder vendor ដែលមានស្រាប់ពីម៉ាស៊ីនរបស់អ្នក)
+# ៦. Copy កូដគម្រោងទាំងអស់
 COPY . .
 
-
+# ៧. បន្ថែម៖ ដំឡើង Node Packages និង Build ឯកសារ Vite (ដោះស្រាយ Error 500)
+RUN npm install && npm run build
 
 # ៨. កំណត់សិទ្ធិ (Permissions) ទៅលើ Folder storage, cache និង vendor
 RUN chown -R www-data:www-data storage bootstrap/cache vendor \
