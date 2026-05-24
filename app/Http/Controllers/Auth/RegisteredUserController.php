@@ -40,6 +40,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'profile_code' => 'USR-' . strtoupper(\Illuminate\Support\Str::random(6)),
         ]);
 
         event(new Registered($user));
