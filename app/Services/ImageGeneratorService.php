@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ImageGeneratorService
@@ -18,7 +18,7 @@ class ImageGeneratorService
             $apiKey = env('UNSPLASH_ACCESS_KEY');
 
             // Try Unsplash API first if key is configured
-            if (!empty($apiKey)) {
+            if (! empty($apiKey)) {
                 $imageUrl = self::fetchFromUnsplash($productName, $apiKey);
                 if ($imageUrl) {
                     return self::downloadAndSaveImage($imageUrl, $productName);
@@ -28,7 +28,8 @@ class ImageGeneratorService
             // Fallback to Lorem Picsum (no API key needed)
             return self::generatePlaceholderImage($productName);
         } catch (\Exception $e) {
-            Log::error('Image generation error: ' . $e->getMessage());
+            Log::error('Image generation error: '.$e->getMessage());
+
             return null;
         }
     }
@@ -51,7 +52,8 @@ class ImageGeneratorService
 
             return null;
         } catch (\Exception $e) {
-            Log::warning('Unsplash API error: ' . $e->getMessage());
+            Log::warning('Unsplash API error: '.$e->getMessage());
+
             return null;
         }
     }
@@ -64,19 +66,21 @@ class ImageGeneratorService
         try {
             // Use Lorem Picsum for placeholder images
             $random = rand(1, 1000);
-            $imageUrl = "https://picsum.photos/600/400?random={$random}&t=" . urlencode($productName);
+            $imageUrl = "https://picsum.photos/600/400?random={$random}&t=".urlencode($productName);
 
-            $imageName = time() . '_' . Str::slug($productName) . '.jpg';
+            $imageName = time().'_'.Str::slug($productName).'.jpg';
             $imageContent = Http::timeout(30)->get($imageUrl)->body();
 
             if ($imageContent && strlen($imageContent) > 1000) { // Verify we got valid image data
-                Storage::disk('public')->put('products/' . $imageName, $imageContent);
-                return 'products/' . $imageName;
+                Storage::disk('public')->put('products/'.$imageName, $imageContent);
+
+                return 'products/'.$imageName;
             }
 
             return null;
         } catch (\Exception $e) {
-            Log::error('Placeholder image error: ' . $e->getMessage());
+            Log::error('Placeholder image error: '.$e->getMessage());
+
             return null;
         }
     }
@@ -90,15 +94,16 @@ class ImageGeneratorService
             $imageContent = Http::timeout(30)->get($imageUrl)->body();
 
             if ($imageContent) {
-                $imageName = time() . '_' . Str::slug($productName) . '.jpg';
-                Storage::disk('public')->put('products/' . $imageName, $imageContent);
+                $imageName = time().'_'.Str::slug($productName).'.jpg';
+                Storage::disk('public')->put('products/'.$imageName, $imageContent);
 
-                return 'products/' . $imageName;
+                return 'products/'.$imageName;
             }
 
             return null;
         } catch (\Exception $e) {
-            Log::error('Image download error: ' . $e->getMessage());
+            Log::error('Image download error: '.$e->getMessage());
+
             return null;
         }
     }

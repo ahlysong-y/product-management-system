@@ -9,7 +9,7 @@ class Sale extends Model
     protected $fillable = [
         'product_id',
         'qty',
-        'total'
+        'total',
     ];
 
     public function product()

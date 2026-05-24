@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Models\Category;
 use App\Models\ActivityLog;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\StockHistory;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
@@ -15,7 +15,7 @@ class ProductController extends Controller
     {
         $search = $request->search ?? '';
 
-        $products = Product::where('name', 'LIKE', '%' . $search . '%')
+        $products = Product::where('name', 'LIKE', '%'.$search.'%')
             ->latest()
             ->paginate(5);
 
@@ -56,7 +56,7 @@ class ProductController extends Controller
             'description' => $request->description,
             'image' => $imagePath,
             'category_id' => $request->category_id,
-            'barcode' => 'PRD-' . rand(100000, 999999)
+            'barcode' => 'PRD-'.rand(100000, 999999),
 
         ]);
 
@@ -64,7 +64,7 @@ class ProductController extends Controller
         StockHistory::create([
             'product_id' => $product->id,
             'type' => 'Stock In',
-            'qty' => $request->qty
+            'qty' => $request->qty,
         ]);
 
         // Activity Log
@@ -72,7 +72,7 @@ class ProductController extends Controller
 
             ActivityLog::create([
                 'user_id' => Auth::user()->id,
-                'activity' => 'Added product: ' . $request->name
+                'activity' => 'Added product: '.$request->name,
             ]);
         }
 
@@ -116,11 +116,11 @@ class ProductController extends Controller
 
             $image = $request->file('image');
 
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $imageName = time().'.'.$image->getClientOriginalExtension();
 
             $image->storeAs('products', $imageName, 'public');
 
-            $data['image'] = 'products/' . $imageName;
+            $data['image'] = 'products/'.$imageName;
         }
 
         $product->update($data);
@@ -130,7 +130,7 @@ class ProductController extends Controller
 
             ActivityLog::create([
                 'user_id' => Auth::user()->id,
-                'activity' => 'Updated product: ' . $product->name
+                'activity' => 'Updated product: '.$product->name,
             ]);
         }
 
@@ -145,7 +145,7 @@ class ProductController extends Controller
 
             ActivityLog::create([
                 'user_id' => Auth::user()->id,
-                'activity' => 'Deleted product: ' . $product->name
+                'activity' => 'Deleted product: '.$product->name,
             ]);
         }
 

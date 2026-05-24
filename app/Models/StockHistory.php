@@ -9,7 +9,7 @@ class StockHistory extends Model
     protected $fillable = [
         'product_id',
         'type',
-        'qty'
+        'qty',
     ];
 
     public function product()

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sale;
-use Illuminate\Http\Request;
-use App\Models\StockHistory;
 use App\Models\Product;
+use App\Models\Sale;
+use App\Models\StockHistory;
+use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
@@ -45,7 +45,7 @@ class SaleController extends Controller
 
         // Validate sufficient stock
         if ($product->qty < $validated['qty']) {
-            return back()->with('error', 'Insufficient stock. Available: ' . $product->qty);
+            return back()->with('error', 'Insufficient stock. Available: '.$product->qty);
         }
 
         $total = $product->price * $validated['qty'];
@@ -53,7 +53,7 @@ class SaleController extends Controller
         $sale = Sale::create([
             'product_id' => $product->id,
             'qty' => $validated['qty'],
-            'total' => $total
+            'total' => $total,
         ]);
 
         $product->decrement('qty', $validated['qty']);
@@ -61,10 +61,10 @@ class SaleController extends Controller
         StockHistory::create([
             'product_id' => $product->id,
             'type' => 'Stock Out',
-            'qty' => $validated['qty']
+            'qty' => $validated['qty'],
         ]);
 
-        return redirect('/sales/' . $sale->id)
+        return redirect('/sales/'.$sale->id)
             ->with('success', 'Sale Completed');
     }
 

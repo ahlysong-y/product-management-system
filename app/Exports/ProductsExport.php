@@ -4,17 +4,17 @@ namespace App\Exports;
 
 use App\Models\Product;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ProductsExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, ShouldAutoSize
+class ProductsExport implements FromCollection, ShouldAutoSize, WithColumnWidths, WithHeadings, WithStyles
 {
     public function collection()
     {
@@ -88,7 +88,7 @@ class ProductsExport implements FromCollection, WithHeadings, WithStyles, WithCo
             // Alternating row colors
             $backgroundColor = ($row % 2 === 0) ? 'f9fafb' : 'ffffff';
 
-            $sheet->getStyle('A' . $row . ':I' . $row)->applyFromArray([
+            $sheet->getStyle('A'.$row.':I'.$row)->applyFromArray([
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,
                     'startColor' => ['rgb' => $backgroundColor],
@@ -110,12 +110,12 @@ class ProductsExport implements FromCollection, WithHeadings, WithStyles, WithCo
             ]);
 
             // Center align ID column
-            $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A'.$row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Right align numeric columns
-            $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-            $sheet->getStyle('F' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-            $sheet->getStyle('G' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle('E'.$row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle('F'.$row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle('G'.$row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
             // Set row height
             $sheet->getRowDimension($row)->setRowHeight(20);
@@ -123,8 +123,8 @@ class ProductsExport implements FromCollection, WithHeadings, WithStyles, WithCo
 
         // Add summary section
         $summaryRow = $highestRow + 2;
-        $sheet->setCellValue('D' . $summaryRow, 'SUMMARY');
-        $sheet->getStyle('D' . $summaryRow)->applyFromArray([
+        $sheet->setCellValue('D'.$summaryRow, 'SUMMARY');
+        $sheet->getStyle('D'.$summaryRow)->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 11,
@@ -133,25 +133,25 @@ class ProductsExport implements FromCollection, WithHeadings, WithStyles, WithCo
         ]);
 
         // Total Products
-        $sheet->setCellValue('D' . ($summaryRow + 1), 'Total Products:');
-        $sheet->setCellValue('E' . ($summaryRow + 1), $highestRow - 1);
+        $sheet->setCellValue('D'.($summaryRow + 1), 'Total Products:');
+        $sheet->setCellValue('E'.($summaryRow + 1), $highestRow - 1);
         $this->styleSummaryRow($sheet, $summaryRow + 1);
 
         // Total Quantity
-        $sheet->setCellValue('D' . ($summaryRow + 2), 'Total Quantity:');
-        $sheet->setCellValue('E' . ($summaryRow + 2), '=SUM(E2:E' . $highestRow . ')');
+        $sheet->setCellValue('D'.($summaryRow + 2), 'Total Quantity:');
+        $sheet->setCellValue('E'.($summaryRow + 2), '=SUM(E2:E'.$highestRow.')');
         $this->styleSummaryRow($sheet, $summaryRow + 2);
 
         // Average Price
-        $sheet->setCellValue('D' . ($summaryRow + 3), 'Average Price:');
-        $sheet->setCellValue('E' . ($summaryRow + 3), '=AVERAGE(F2:F' . $highestRow . ')');
-        $sheet->getStyle('E' . ($summaryRow + 3))->getNumberFormat()->setFormatCode('$#,##0.00');
+        $sheet->setCellValue('D'.($summaryRow + 3), 'Average Price:');
+        $sheet->setCellValue('E'.($summaryRow + 3), '=AVERAGE(F2:F'.$highestRow.')');
+        $sheet->getStyle('E'.($summaryRow + 3))->getNumberFormat()->setFormatCode('$#,##0.00');
         $this->styleSummaryRow($sheet, $summaryRow + 3);
 
         // Total Inventory Value
-        $sheet->setCellValue('D' . ($summaryRow + 4), 'Total Inventory Value:');
-        $sheet->setCellValue('E' . ($summaryRow + 4), '=SUM(G2:G' . $highestRow . ')');
-        $sheet->getStyle('E' . ($summaryRow + 4))->applyFromArray([
+        $sheet->setCellValue('D'.($summaryRow + 4), 'Total Inventory Value:');
+        $sheet->setCellValue('E'.($summaryRow + 4), '=SUM(G2:G'.$highestRow.')');
+        $sheet->getStyle('E'.($summaryRow + 4))->applyFromArray([
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => '2563eb'],
@@ -168,7 +168,7 @@ class ProductsExport implements FromCollection, WithHeadings, WithStyles, WithCo
                 ],
             ],
         ]);
-        $sheet->getStyle('E' . ($summaryRow + 4))->getNumberFormat()->setFormatCode('$#,##0.00');
+        $sheet->getStyle('E'.($summaryRow + 4))->getNumberFormat()->setFormatCode('$#,##0.00');
 
         // Freeze header row
         $sheet->freezePane('A2');
@@ -193,7 +193,7 @@ class ProductsExport implements FromCollection, WithHeadings, WithStyles, WithCo
 
     private function styleSummaryRow(Worksheet $sheet, int $row)
     {
-        $sheet->getStyle('D' . $row . ':E' . $row)->applyFromArray([
+        $sheet->getStyle('D'.$row.':E'.$row)->applyFromArray([
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => 'f0f9ff'],

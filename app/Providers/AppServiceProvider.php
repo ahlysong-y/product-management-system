@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL; // <-- កុំភ្លេចលួចថែមជួរនេះ
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider; // <-- កុំភ្លេចលួចថែមជួរនេះ
 
 class AppServiceProvider extends ServiceProvider
 {
