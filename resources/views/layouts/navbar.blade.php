@@ -37,6 +37,10 @@
                     <a class="nav-link {{ request()->is('categories*') ? 'active fw-semibold' : '' }}"
                         href="{{ url('/categories') }}">🏷️ Categories</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active fw-semibold' : '' }}"
+                        href="{{ route('profile.edit') }}">👤 Profile</a>
+                </li>
             </ul>
 
             <!-- Right Side Navigation & Actions -->
